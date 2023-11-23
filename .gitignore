@@ -1,2 +1,4 @@
 /TP/build/
 *.user
+TP/.idea/
+TP/cmake-build-debug/

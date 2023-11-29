@@ -7,15 +7,16 @@
 
 #include <vector>
 #include <memory>
+#include <iostream>
 
 namespace OM3D {
 
-class Scene : NonMovable {
+    class Scene : NonMovable {
 
     public:
         Scene();
 
-        static Result<std::unique_ptr<Scene>> from_gltf(const std::string& file_name);
+        static Result<std::unique_ptr<Scene>> from_gltf(const std::string &file_name);
 
         void render() const;
 
@@ -25,8 +26,8 @@ class Scene : NonMovable {
         Span<const SceneObject> objects() const;
         Span<const PointLight> point_lights() const;
 
-        Camera& camera();
-        const Camera& camera() const;
+        Camera &camera();
+        const Camera &camera() const;
 
         void set_sun(glm::vec3 direction, glm::vec3 color = glm::vec3(1.0f));
 
@@ -39,7 +40,7 @@ class Scene : NonMovable {
 
 
         Camera _camera;
-};
+    };
 
 }
 

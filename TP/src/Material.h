@@ -9,19 +9,19 @@
 
 namespace OM3D {
 
-enum class BlendMode {
-    None,
-    Alpha,
-};
+    enum class BlendMode {
+        None,
+        Alpha,
+    };
 
-enum class DepthTestMode {
-    Standard,
-    Reversed,
-    Equal,
-    None
-};
+    enum class DepthTestMode {
+        Standard,
+        Reversed,
+        Equal,
+        None
+    };
 
-class Material {
+    class Material {
 
     public:
         Material();
@@ -32,7 +32,7 @@ class Material {
         void set_texture(u32 slot, std::shared_ptr<Texture> tex);
 
         template<typename... Args>
-        void set_uniform(Args&&... args) {
+        void set_uniform(Args &&... args) {
             _program->set_uniform(FWD(args)...);
         }
 
@@ -51,7 +51,7 @@ class Material {
         BlendMode _blend_mode = BlendMode::None;
         DepthTestMode _depth_test_mode = DepthTestMode::Standard;
 
-};
+    };
 
 }
 

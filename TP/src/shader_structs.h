@@ -8,9 +8,9 @@
 #include <glm/matrix.hpp>
 
 namespace OM3D {
-namespace shader {
+    namespace shader {
 
-using namespace glm;
+        using namespace glm;
 
 #include <../shaders/structs.glsl>
 

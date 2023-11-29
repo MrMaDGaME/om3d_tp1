@@ -21,6 +21,10 @@ namespace OM3D {
         _depth_test_mode = depth;
     }
 
+    void Material::set_back_face_culling(bool culling) {
+        _back_face_culling = culling;
+    }
+
     void Material::set_texture(u32 slot, std::shared_ptr<Texture> tex) {
         if (const auto it = std::find_if(_textures.begin(), _textures.end(), [&](const auto &t) { return t.second == tex; }); it != _textures.end()) {
             it->second = std::move(tex);
@@ -62,6 +66,13 @@ namespace OM3D {
                 // We are using reverse-Z
                 glDepthFunc(GL_LEQUAL);
                 break;
+        }
+
+        if (_back_face_culling) {
+            glEnable(GL_CULL_FACE);
+            glCullFace(GL_BACK);
+        } else {
+            glDisable(GL_CULL_FACE);
         }
 
         for (const auto &texture: _textures) {

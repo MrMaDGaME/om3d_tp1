@@ -199,7 +199,7 @@ std::unique_ptr<Scene> create_default_scene() {
     auto scene = std::make_unique<Scene>();
 
     // Load default cube model
-    auto result = Scene::from_gltf(std::string(data_path) + "forest.glb");
+    auto result = Scene::from_gltf(std::string(data_path) + "cube.glb");
     ALWAYS_ASSERT(result.is_ok, "Unable to load default scene");
     scene = std::move(result.value);
 
@@ -314,6 +314,7 @@ int main(int argc, char **argv) {
 
         // Apply a tonemap in compute shader
         {
+            glDisable(GL_CULL_FACE);
             renderer.tone_map_framebuffer.bind();
             tonemap_program->bind();
             tonemap_program->set_uniform(HASH("exposure"), exposure);

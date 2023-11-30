@@ -68,22 +68,32 @@ namespace OM3D {
 
         std::vector<SceneObject> obj1;
         std::vector<SceneObject> obj2;
+        std::vector<glm::mat4> obj1_transforms;
+        std::vector<glm::mat4> obj2_transforms;
 
         // Render every object
         for (const SceneObject &obj: _objects) {
             if (_camera.isSphereOutsideFrustum(_camera.build_frustum(), {obj.transform() * glm::vec4(obj.getMesh()->bounding_sphere.center, 1), obj
             .getMesh()
             ->bounding_sphere.radius})) {
-                std::cout << "Object outside frustum" << std::endl;
                 continue;
             }
             if (obj1.empty() || obj.getMaterial() == obj1[0].getMaterial()) {
                 obj1.emplace_back(obj);
+                obj1_transforms.emplace_back(obj.transform());
             } else {
                 obj2.emplace_back(obj);
+                obj2_transforms.emplace_back(obj.transform());
             }
-            obj.render();
+//            obj.render();
         }
+        obj1[0].getMaterial()->bind();
+        TypedBuffer<glm::mat4>(obj1_transforms.data(), obj1_transforms.size()).bind(BufferUsage::Storage, 2);
+        obj1[0].getMesh()->draw(obj1.size());
+        obj2[0].getMaterial()->bind();
+        TypedBuffer<glm::mat4>(obj2_transforms.data(), obj2_transforms.size()).bind(BufferUsage::Storage, 2);
+        obj2[0].getMesh()->draw(obj2.size());
+
     }
 
 }

@@ -19,13 +19,15 @@ layout(binding = 0) uniform Data {
     FrameData frame;
 };
 
-uniform mat4 model;
+layout(binding = 2) buffer Models {
+    mat4 model[];
+};
 
 void main() {
-    const vec4 position = model * vec4(in_pos, 1.0);
+    const vec4 position = model[gl_InstanceID] * vec4(in_pos, 1.0);
 
-    out_normal = normalize(mat3(model) * in_normal);
-    out_tangent = normalize(mat3(model) * in_tangent_bitangent_sign.xyz);
+    out_normal = normalize(mat3(model[gl_InstanceID]) * in_normal);
+    out_tangent = normalize(mat3(model[gl_InstanceID]) * in_tangent_bitangent_sign.xyz);
     out_bitangent = cross(out_tangent, out_normal) * (in_tangent_bitangent_sign.w > 0.0 ? 1.0 : -1.0);
 
     out_uv = in_uv;
@@ -34,4 +36,3 @@ void main() {
 
     gl_Position = frame.camera.view_proj * position;
 }
-

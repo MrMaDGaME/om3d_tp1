@@ -30,7 +30,7 @@ namespace OM3D {
 
         explicit StaticMesh(const MeshData &data);
 
-        void draw() const;
+        void draw(size_t n) const;
 
         BoundingSphere bounding_sphere = {{0.0f, 0.0f, 0.0f}, 0.0f};
 

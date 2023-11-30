@@ -17,12 +17,12 @@ namespace OM3D {
             radius = std::max(radius, static_cast<float>(glm::length(vertex.position - sphereCenter)));
         }
 
-        std::cout << "Bounding sphere center: " << sphereCenter.x << ", " << sphereCenter.y << ", " << sphereCenter.z << std::endl;
-        std::cout << "Bounding sphere radius: " << radius << std::endl;
+//        std::cout << "Bounding sphere center: " << sphereCenter.x << ", " << sphereCenter.y << ", " << sphereCenter.z << std::endl;
+//        std::cout << "Bounding sphere radius: " << radius << std::endl;
         bounding_sphere = {sphereCenter, radius};
     }
 
-    void StaticMesh::draw() const {
+    void StaticMesh::draw(size_t n) const {
         _vertex_buffer.bind(BufferUsage::Attribute);
         _index_buffer.bind(BufferUsage::Index);
 
@@ -47,6 +47,6 @@ namespace OM3D {
             audit_bindings();
         }
 
-        glDrawElements(GL_TRIANGLES, int(_index_buffer.element_count()), GL_UNSIGNED_INT, nullptr);
+        glDrawElementsInstanced(GL_TRIANGLES, int(_index_buffer.element_count()), GL_UNSIGNED_INT, nullptr, int(n));
     }
 }

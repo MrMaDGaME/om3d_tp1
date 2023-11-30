@@ -298,6 +298,7 @@ namespace OM3D {
         _material.set_program(Program::from_files("imgui.frag", "imgui.vert"));
         _material.set_depth_test_mode(DepthTestMode::None);
         _material.set_blend_mode(BlendMode::Alpha);
+        _material.set_back_face_culling(false);
 
         _font = create_font();
 

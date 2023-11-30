@@ -71,7 +71,9 @@ namespace OM3D {
 
         // Render every object
         for (const SceneObject &obj: _objects) {
-            if (_camera.isSphereOutsideFrustum(_camera.build_frustum(), obj.getMesh()->bounding_sphere)) {
+            if (_camera.isSphereOutsideFrustum(_camera.build_frustum(), {obj.transform() * glm::vec4(obj.getMesh()->bounding_sphere.center, 1), obj
+            .getMesh()
+            ->bounding_sphere.radius})) {
                 std::cout << "Object outside frustum" << std::endl;
                 continue;
             }

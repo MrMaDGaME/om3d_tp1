@@ -22,6 +22,8 @@ namespace OM3D {
 
         const std::shared_ptr<StaticMesh> &getMesh() const;
 
+        const std::shared_ptr<Material> &getMaterial() const;
+
     private:
         glm::mat4 _transform = glm::mat4(1.0f);
 

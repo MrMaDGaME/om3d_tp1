@@ -32,7 +32,7 @@ namespace OM3D {
 
         void draw() const;
 
-        BoundingSphere bounding_sphere;
+        BoundingSphere bounding_sphere = {{0.0f, 0.0f, 0.0f}, 0.0f};
 
     private:
         TypedBuffer<Vertex> _vertex_buffer;

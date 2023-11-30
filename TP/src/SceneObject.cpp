@@ -31,4 +31,8 @@ namespace OM3D {
         return _mesh;
     }
 
+    const std::shared_ptr<Material> &SceneObject::getMaterial() const {
+        return _material;
+    }
+
 }

@@ -17,6 +17,7 @@ cd TP/build/debug
 cmake ../..
 make
 ```
+**Penser à changer les path des shaders dans le code**
 
 ### Contact
 If you have a problem, please send a mail to

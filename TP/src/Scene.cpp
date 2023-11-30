@@ -66,11 +66,19 @@ namespace OM3D {
         }
         light_buffer.bind(BufferUsage::Storage, 1);
 
+        std::vector<SceneObject> obj1;
+        std::vector<SceneObject> obj2;
+
         // Render every object
         for (const SceneObject &obj: _objects) {
             if (_camera.isSphereOutsideFrustum(_camera.build_frustum(), obj.getMesh()->bounding_sphere)) {
                 std::cout << "Object outside frustum" << std::endl;
                 continue;
+            }
+            if (obj1.empty() || obj.getMaterial() == obj1[0].getMaterial()) {
+                obj1.emplace_back(obj);
+            } else {
+                obj2.emplace_back(obj);
             }
             obj.render();
         }

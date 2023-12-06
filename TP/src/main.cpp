@@ -27,6 +27,15 @@ namespace OM3D {
     extern bool audit_bindings_before_draw;
 }
 
+enum DebugMode {
+    NONE,
+    ALBEDO,
+    NORMALS,
+    DEPTH,
+};
+
+DebugMode debug_mode = NONE;
+
 void parse_args(int argc, char **argv) {
     for (int i = 1; i < argc; ++i) {
         const std::string_view arg = argv[i];
@@ -125,6 +134,22 @@ void gui(ImGuiRenderer &imgui) {
             ImGui::DragFloat("Exposure", &exposure, 0.25f, 0.01f, 100.0f, "%.2f", ImGuiSliderFlags_Logarithmic);
             if (exposure != 1.0f && ImGui::Button("Reset")) {
                 exposure = 1.0f;
+            }
+            ImGui::EndMenu();
+        }
+
+        if (ImGui::BeginMenu("Debug")) {
+            if (ImGui::MenuItem("None")) {
+                debug_mode = NONE;
+            }
+            if (ImGui::MenuItem("Albedo")) {
+                debug_mode = ALBEDO;
+            }
+            if (ImGui::MenuItem("Normals")) {
+                debug_mode = NORMALS;
+            }
+            if (ImGui::MenuItem("Depth")) {
+                debug_mode = DEPTH;
             }
             ImGui::EndMenu();
         }

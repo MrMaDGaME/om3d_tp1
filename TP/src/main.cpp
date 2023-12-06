@@ -234,8 +234,11 @@ struct RendererState {
             state.depth_texture = Texture(size, ImageFormat::Depth32_FLOAT);
             state.lit_hdr_texture = Texture(size, ImageFormat::RGBA16_FLOAT);
             state.tone_mapped_texture = Texture(size, ImageFormat::RGBA8_UNORM);
+            state.g_albedo = Texture(size, ImageFormat::RGBA8_sRGB);
+            state.g_normal = Texture(size, ImageFormat::RGBA8_UNORM);
             state.main_framebuffer = Framebuffer(&state.depth_texture, std::array{&state.lit_hdr_texture});
-            state.tone_map_framebuffer = Framebuffer(nullptr, std::array{&state.tone_mapped_texture});
+            //state.tone_map_framebuffer = Framebuffer(nullptr, std::array{&state.tone_mapped_texture});
+            state.g_framebuffer = Framebuffer(&state.depth_texture, std::array{&state.g_albedo, &state.g_normal});
         }
 
         return state;
@@ -246,9 +249,12 @@ struct RendererState {
     Texture depth_texture;
     Texture lit_hdr_texture;
     Texture tone_mapped_texture;
-
+    Texture g_albedo;
+    Texture g_normal;
+    
+    Framebuffer g_framebuffer;
     Framebuffer main_framebuffer;
-    Framebuffer tone_map_framebuffer;
+    // Framebuffer tone_map_framebuffer;
 };
 
 
@@ -280,7 +286,8 @@ int main(int argc, char **argv) {
 
     scene = create_default_scene();
 
-    auto tonemap_program = Program::from_files("tonemap.frag", "screen.vert");
+    //auto tonemap_program = Program::from_files("tonemap.frag", "screen.vert");
+    auto g_buffer_program = Program::from_files("lit.frag", "basic.vert");
     RendererState renderer;
 
     for (;;) {
@@ -308,23 +315,34 @@ int main(int argc, char **argv) {
 
         // Render the scene
         {
-            renderer.main_framebuffer.bind();
+            //renderer.main_framebuffer.bind();
+            renderer.g_framebuffer.bind();
             scene->render();
         }
 
         // Apply a tonemap in compute shader
-        {
-            glDisable(GL_CULL_FACE);
-            renderer.tone_map_framebuffer.bind();
-            tonemap_program->bind();
-            tonemap_program->set_uniform(HASH("exposure"), exposure);
-            renderer.lit_hdr_texture.bind(0);
-            glDrawArrays(GL_TRIANGLES, 0, 3);
-        }
+        // {
+        //     glDisable(GL_CULL_FACE);
+        //     renderer.tone_map_framebuffer.bind();
+        //     tonemap_program->bind();
+        //     tonemap_program->set_uniform(HASH("exposure"), exposure);
+        //     renderer.lit_hdr_texture.bind(0);
+        //     glDrawArrays(GL_TRIANGLES, 0, 3);
+        // }
+
+        // Apply a tonemap in compute shader
+        // {
+        //     glDisable(GL_CULL_FACE);
+        //     renderer.g_framebuffer.bind();
+        //     g_buffer_program->bind();
+        //     renderer.lit_hdr_texture.bind(0);
+        //     glDrawArrays(GL_TRIANGLES, 0, 3);
+        // }
 
         // Blit tonemap result to screen
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        renderer.tone_map_framebuffer.blit();
+        renderer.g_framebuffer.blit();
+        //renderer.tone_map_framebuffer.blit();
 
         gui(imgui);
 

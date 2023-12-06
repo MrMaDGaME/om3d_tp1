@@ -16,9 +16,6 @@ namespace OM3D {
         for (const auto &vertex : data.vertices) {
             radius = std::max(radius, static_cast<float>(glm::length(vertex.position - sphereCenter)));
         }
-
-        std::cout << "Bounding sphere center: " << sphereCenter.x << ", " << sphereCenter.y << ", " << sphereCenter.z << std::endl;
-        std::cout << "Bounding sphere radius: " << radius << std::endl;
         bounding_sphere = {sphereCenter, radius};
     }
 

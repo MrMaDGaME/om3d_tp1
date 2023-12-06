@@ -74,7 +74,6 @@ namespace OM3D {
             if (_camera.isSphereOutsideFrustum(_camera.build_frustum(), {obj.transform() * glm::vec4(obj.getMesh()->bounding_sphere.center, 1), obj
             .getMesh()
             ->bounding_sphere.radius})) {
-                std::cout << "Object outside frustum" << std::endl;
                 continue;
             }
             if (obj1.empty() || obj.getMaterial() == obj1[0].getMaterial()) {

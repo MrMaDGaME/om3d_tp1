@@ -336,25 +336,22 @@ int main(int argc, char** argv) {
 
         // Render the scene
         {
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            //glBindFramebuffer(GL_FRAMEBUFFER, 0);
             glDisable(GL_CULL_FACE);
             renderer.g_framebuffer.bind();
             scene->render();
         }
 
         {
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            ///glBindFramebuffer(GL_FRAMEBUFFER, 0);
             renderer.main_framebuffer.bind();
             g_buffer_program->bind();
             
             g_buffer_program->set_uniform("displayMode", static_cast<u32>(debug_mode));
 
-            if (debug_mode == ALBEDO)
-                renderer.g_albedo.bind(0);
-            else if (debug_mode == NORMALS)
-                renderer.g_normal.bind(0);
-            else if (debug_mode == DEPTH)
-                renderer.depth_texture.bind(0);
+            renderer.g_albedo.bind(0);
+            renderer.g_normal.bind(1);
+            renderer.depth_texture.bind(2);
 
             glDisable(GL_CULL_FACE);
             glDrawArrays(GL_TRIANGLES, 0, 3);

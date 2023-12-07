@@ -33,16 +33,16 @@ void main()
 {
     #ifdef NORMAL_MAPPED
         const vec3 normal_map = unpack_normal_map(texture(in_normal_texture, in_uv).xy);
-        out_normal = (vec4(normal_map.x * in_tangent + normal_map.y * in_bitangent + normal_map.z * in_normal, 1.0) + 1.0) / 2.0;
+        out_normal = vec4(normal_map.x * in_tangent + normal_map.y * in_bitangent + normal_map.z * in_normal, 1.0) * 0.5 + 0.5;
     #else
-        out_normal = (vec4(in_normal, 1.0) + 1.0) / 2.0;
+        out_normal = vec4(in_normal, 1.0) * 0.5 + 0.5;
     #endif
         vec4 color = vec4(in_color, 1.0);
     #ifdef TEXTURED
         color *= texture(in_texture, in_uv);
     #endif
     #ifdef DEBUG_NORMAL
-        color = (vec4(normal, 1.0) + 1.0) / 2.0;
+        color = vec4(normal, 1.0) * 0.5 + 0.5;
     #endif
         out_color = color;
 }

@@ -262,7 +262,7 @@ struct RendererState {
             state.tone_mapped_texture = Texture(size, ImageFormat::RGBA8_UNORM);
             state.g_albedo = Texture(size, ImageFormat::RGBA8_sRGB);
             state.g_normal = Texture(size, ImageFormat::RGBA8_UNORM);
-            state.main_framebuffer = Framebuffer(&state.depth_texture, std::array{&state.lit_hdr_texture});
+            state.main_framebuffer = Framebuffer(nullptr, std::array{&state.lit_hdr_texture});
             state.tone_map_framebuffer = Framebuffer(nullptr, std::array{&state.tone_mapped_texture});
             state.g_framebuffer = Framebuffer(&state.depth_texture, std::array{&state.g_albedo, &state.g_normal});
         }
@@ -349,16 +349,19 @@ int main(int argc, char** argv) {
 
         {
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
-            glDisable(GL_CULL_FACE);
             renderer.main_framebuffer.bind();
             g_buffer_program->bind();
             
             g_buffer_program->set_uniform("displayMode", static_cast<u32>(debug_mode));
 
-            renderer.g_albedo.bind(0);
-            renderer.g_normal.bind(1);
-            renderer.depth_texture.bind(2);
+            if (debug_mode == ALBEDO)
+                renderer.g_albedo.bind(0);
+            else if (debug_mode == NORMALS)
+                renderer.g_normal.bind(0);
+            else if (debug_mode == DEPTH)
+                renderer.depth_texture.bind(0);
 
+            glDisable(GL_CULL_FACE);
             glDrawArrays(GL_TRIANGLES, 0, 3);
         }
 

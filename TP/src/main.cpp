@@ -137,18 +137,13 @@ void gui(ImGuiRenderer& imgui) {
             ImGui::EndMenu();
         }
 
+        // Affiche la ComboBox
+        const char* items[] = { "None", "Albedo", "Normals", "Depth" };
+        static int item_current_idx = static_cast<int>(debug_mode); // Cast enum to int for ImGui
+
         if (ImGui::BeginMenu("Debug")) {
-            if (ImGui::MenuItem("None")) {
-                debug_mode = NONE;
-            }
-            if (ImGui::MenuItem("Albedo")) {
-                debug_mode = ALBEDO;
-            }
-            if (ImGui::MenuItem("Normals")) {
-                debug_mode = NORMALS;
-            }
-            if (ImGui::MenuItem("Depth")) {
-                debug_mode = DEPTH;
+            if (ImGui::Combo("Debug mode", &item_current_idx, items, IM_ARRAYSIZE(items))) {
+                debug_mode = static_cast<DebugMode>(item_current_idx); // Cast int back to enum after ImGui modifies it
             }
             ImGui::EndMenu();
         }

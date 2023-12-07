@@ -365,10 +365,12 @@ int main(int argc, char** argv) {
             glDrawArrays(GL_TRIANGLES, 0, 3);
         }
 
-
         // Blit tonemap result to screen
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        renderer.main_framebuffer.blit();
+        if (debug_mode == NONE)
+            renderer.g_framebuffer.blit();
+        else
+            renderer.main_framebuffer.blit();
 
         gui(imgui);
 

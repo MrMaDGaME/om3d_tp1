@@ -3,4 +3,5 @@
 TP/.idea/
 TP/cmake-build-debug/
 .vs
+*.vscode
 .idea/

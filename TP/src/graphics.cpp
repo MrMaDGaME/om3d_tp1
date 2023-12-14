@@ -75,7 +75,7 @@ namespace OM3D {
         std::cout << "OpenGL " << glGetString(GL_VERSION) << " initialized on " << glGetString(GL_VENDOR) << " " << glGetString(GL_RENDERER)
                   << " using GLSL " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
 
-        glClearColor(0.5f, 0.7f, 0.8f, 0.0f);
+        glClearColor(0.1f, 0.14f, 0.16f, 0.0f);
 
         {
             glDebugMessageCallback(&debug_out, nullptr);

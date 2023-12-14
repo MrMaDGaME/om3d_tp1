@@ -12,6 +12,7 @@ namespace OM3D {
     enum class BlendMode {
         None,
         Alpha,
+        Additive
     };
 
     enum class DepthTestMode {
@@ -31,6 +32,7 @@ namespace OM3D {
         void set_depth_test_mode(DepthTestMode depth);
         void set_texture(u32 slot, std::shared_ptr<Texture> tex);
         void set_back_face_culling(bool culling);
+        void set_depth_write(bool write);
 
         template<typename... Args>
         void set_uniform(Args &&... args) {
@@ -52,6 +54,7 @@ namespace OM3D {
         BlendMode _blend_mode = BlendMode::None;
         DepthTestMode _depth_test_mode = DepthTestMode::Standard;
         bool _back_face_culling = true;
+        bool _depth_write = true;
     };
 
 }

@@ -14,6 +14,7 @@
 #include <iostream>
 #include <vector>
 #include <filesystem>
+#include <sstream>
 
 using namespace OM3D;
 
@@ -28,6 +29,8 @@ extern bool audit_bindings_before_draw;
 
 enum DebugMode {
     NONE,
+    SUN,
+    POINT_LIGHTS,
     ALBEDO,
     NORMALS,
     DEPTH,
@@ -138,7 +141,7 @@ void gui(ImGuiRenderer& imgui) {
         }
 
         // Affiche la ComboBox
-        const char* items[] = { "None", "Albedo", "Normals", "Depth" };
+        const char* items[] = { "None", "Sun", "Point Lights", "Albedo", "Normals", "Depth" };
         static int item_current_idx = static_cast<int>(debug_mode); // Cast enum to int for ImGui
 
         if (ImGui::BeginMenu("Debug")) {
@@ -260,6 +263,7 @@ struct RendererState {
             state.main_framebuffer = Framebuffer(nullptr, std::array{&state.lit_hdr_texture});
             state.tone_map_framebuffer = Framebuffer(nullptr, std::array{&state.tone_mapped_texture});
             state.g_framebuffer = Framebuffer(&state.depth_texture, std::array{&state.g_albedo, &state.g_normal});
+            state.lighting = Framebuffer(nullptr, std::array{&state.lit_hdr_texture});
         }
 
         return state;
@@ -276,6 +280,7 @@ struct RendererState {
     Framebuffer main_framebuffer;
     Framebuffer tone_map_framebuffer;
     Framebuffer g_framebuffer;
+    Framebuffer lighting;
 };
 
 
@@ -309,7 +314,25 @@ int main(int argc, char** argv) {
 
     auto tonemap_program = Program::from_files("tonemap.frag", "screen.vert");
     auto g_buffer_program = Program::from_files("gbuffer_debug.frag", "screen.vert");
+    auto sun_program = Program::from_files("sun.frag", "screen.vert");
+    auto point_lights_program = Program::from_files("point_lights.frag", "screen.vert");
     RendererState renderer;
+
+    Material *sunMat = new Material();
+    Material *pointLightMat = new Material();
+
+    sunMat->set_program(sun_program);
+    sunMat->set_uniform("sun_direction", glm::vec3(0, 1, 0));
+    sunMat->set_depth_write(false);
+    
+
+    auto sphere = Scene::from_gltf(std::string(data_path) + "sphere.glb");
+
+    pointLightMat->set_back_face_culling(true);
+    pointLightMat->set_program(point_lights_program);
+    pointLightMat->set_blend_mode(BlendMode::Additive);
+    pointLightMat->set_depth_write(false);
+    
 
     for(;;) {
 
@@ -336,33 +359,70 @@ int main(int argc, char** argv) {
 
         // Render the scene
         {
-            //glBindFramebuffer(GL_FRAMEBUFFER, 0);
             glDisable(GL_CULL_FACE);
             renderer.g_framebuffer.bind();
             scene->render();
         }
 
-        {
-            ///glBindFramebuffer(GL_FRAMEBUFFER, 0);
-            renderer.main_framebuffer.bind();
-            g_buffer_program->bind();
-            
-            g_buffer_program->set_uniform("displayMode", static_cast<u32>(debug_mode));
+        if (debug_mode == NONE || debug_mode == SUN || debug_mode == POINT_LIGHTS) {
+            {
+                renderer.lighting.bind();
 
-            renderer.g_albedo.bind(0);
-            renderer.g_normal.bind(1);
-            renderer.depth_texture.bind(2);
+                // Sun
+                if (debug_mode == NONE || debug_mode == SUN) {
+                    sunMat->bind();
 
-            glDisable(GL_CULL_FACE);
-            glDrawArrays(GL_TRIANGLES, 0, 3);
-        }
+                    renderer.g_albedo.bind(0);
+                    renderer.g_normal.bind(1);
+                    sunMat->set_uniform("sun_direction", glm::vec3(-0.5, -1, 0));
 
-        // Blit tonemap result to screen
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        if (debug_mode == NONE)
-            renderer.g_framebuffer.blit();
-        else
+                    glDisable(GL_CULL_FACE);
+                    glDrawArrays(GL_TRIANGLES, 0, 3);
+                }
+                
+                if (debug_mode == NONE || debug_mode == POINT_LIGHTS) {
+                    // Point Lights
+                    pointLightMat->bind();
+
+                    renderer.g_albedo.bind(0);
+                    renderer.g_normal.bind(1);
+                    renderer.depth_texture.bind(2);
+
+                    pointLightMat->set_uniform("view_proj", scene->camera().view_proj_matrix());
+                    u32 lightCount = static_cast<u32>(scene->point_lights().size());
+                    for (u32 i = 0; i < lightCount; ++i) {
+                        pointLightMat->set_uniform("lightPosition", scene->point_lights()[i].position());
+                        pointLightMat->set_uniform("lightColor", scene->point_lights()[i].color());
+                        pointLightMat->set_uniform("lightRadius", scene->point_lights()[i].radius());
+                        
+                        glDisable(GL_CULL_FACE);
+                        glDrawArrays(GL_TRIANGLES, 0, 3);
+                    }
+                }
+            }
+
+            // Blit tonemap result to screen
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            renderer.lighting.blit();
+        } else {
+            {
+                renderer.main_framebuffer.bind();
+                g_buffer_program->bind();
+                
+                g_buffer_program->set_uniform("displayMode", static_cast<u32>(debug_mode));
+
+                renderer.g_albedo.bind(0);
+                renderer.g_normal.bind(1);
+                renderer.depth_texture.bind(2);
+
+                glDisable(GL_CULL_FACE);
+                glDrawArrays(GL_TRIANGLES, 0, 3);
+            }
+
+            // Blit tonemap result to screen
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
             renderer.main_framebuffer.blit();
+        }
 
         gui(imgui);
 

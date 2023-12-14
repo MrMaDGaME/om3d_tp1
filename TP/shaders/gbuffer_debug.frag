@@ -13,10 +13,9 @@ layout(binding = 2) uniform sampler2D depthTexture;
 
 uniform uint displayMode;
 
-const uint NONE = 0;
-const uint ALBEDO = 1;
-const uint NORMALS = 2;
-const uint DEPTH = 3;
+const uint ALBEDO = 3;
+const uint NORMALS = 4;
+const uint DEPTH = 5;
 
 void main()
 {
